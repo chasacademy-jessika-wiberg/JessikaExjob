@@ -118,9 +118,7 @@
             position: absolute;
         }
         .filter-icon {
-            position: absolute;
-            top: 100px;
-            right: -30px;
+            display: none;
             background-color: #243b53;
             width: 40px;
             height: 40px;
@@ -129,7 +127,17 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1;
+            z-index: 3;
+        }
+        .filter-icon.web {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+        }
+        .filter-icon.mobile {
+            position: fixed;
+            top: 60px;
+            left: 10px;
         }
         .diagram {
             max-width: 100%;
@@ -138,29 +146,69 @@
             height: auto;
         }
         
-        /* Responsive design */
+        /* Responsiv design */
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
-                position: static;
-                box-shadow: none;
-                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 2;
+                overflow-y: auto;
+                background-color: #f4f4f4;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
             }
             .sidebar.active {
-                display: block;
+                transform: translateX(0);
             }
             .filter-icon {
-                display: block;
+                display: flex;
+            }
+            .filter-icon.web {
+                display: none;
+            }
+            .filter-icon.mobile {
+                display: flex;
+            }
+            .content {
+                flex-direction: column;
+            }
+        }
+        @media (min-width: 769px) {
+            .filter-icon.mobile {
+                display: none;
+            }
+            .filter-icon.web {
+                display: flex;
+            }
+            .sidebar {
+                padding-right: 60px;
+            }
+            .filter-icon.web {
+                position: absolute;
+                top: 20px;
+                right: 20px;
             }
         }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const filterIcon = document.querySelector('.filter-icon');
+            const filterIcons = document.querySelectorAll('.filter-icon');
             const sidebar = document.querySelector('.sidebar');
-            
-            filterIcon.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
+            const content = document.querySelector('.content');
+
+            filterIcons.forEach(icon => {
+                icon.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            });
+
+            content.addEventListener('click', (e) => {
+                if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !Array.from(filterIcons).some(icon => icon.contains(e.target))) {
+                    sidebar.classList.remove('active');
+                }
             });
         });
     </script>
@@ -211,13 +259,16 @@
                 <button>ÅTERGÅ</button>
                 <button>SÖK</button>
             </div>
-            <div class="filter-icon">
+            <div class="filter-icon web">
                 &#9881;
             </div>
         </div>
         <div class="main">
             <h1>Systemkarta</h1>
             <img src="kartvy.png" alt="Systemkarta som visar it system" class="diagram">
+        </div>
+        <div class="filter-icon mobile">
+            &#9881;
         </div>
     </div>
 </body>
